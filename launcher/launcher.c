@@ -94,6 +94,7 @@ int lsetup_cli_main(int argc, char **argv, int *handled);
 #include <string.h>
 #include <zlib.h>
 #include <sys/stat.h>
+#include "../app/userdir.h"
 #include "ra_emblem.h"
 
 #ifdef _WIN32
@@ -596,8 +597,24 @@ static void l_find_install(L_App *a)
         if (!strcmp(before, cur))
             break; /* at the root: there is nowhere further up to look */
     }
-    if (!a->dir[0])
+    if (!a->dir[0]) {
+#if defined(__linux__)
+        /* No dosmenu.pack beside the binary: this is the packaged layout, whose
+           program lives under /usr/lib/opencnc3d. Downloads go to the same
+           per-user folder the game uses for saves. SDL creates it. A flat
+           folder that does hold dosmenu.pack was returned above. */
+        char *pref = SDL_GetPrefPath(OPENCNC3D_PREF_ORG, OPENCNC3D_PREF_APP);
+        if (pref) {
+            size_t n = strlen(pref);
+            while (n > 1 && (pref[n - 1] == '/' || pref[n - 1] == '\\'))
+                pref[--n] = '\0';
+            snprintf(a->dir, sizeof a->dir, "%s", pref);
+            SDL_free(pref);
+            return;
+        }
+#endif
         snprintf(a->dir, sizeof a->dir, "%s", own);
+    }
 }
 
 /* WHAT MAKES RED ALERT INSTALLED is lmodule.c's test, the one the movies and music
@@ -782,13 +799,32 @@ static int l_launch(const char *dir, const char *exe, const char *module,
     CloseHandle(pi.hProcess);
     return 1;
 #else
+#if defined(__linux__)
+    /* The working directory is the data folder. The program sits beside this
+       launcher, which in a package is /usr/lib/opencnc3d and not that folder. */
+    {
+        char self[1024];
+        if (!lp_self(self, sizeof self)) {
+            snprintf(err, (size_t)errlen, "could not find this launcher");
+            return 0;
+        }
+        lp_dirname(self);
+        if (snprintf(path, sizeof path, "%s/%s", self, exe) >= (int)sizeof path) {
+            snprintf(err, (size_t)errlen, "could not start %s", exe);
+            return 0;
+        }
+    }
+#else
     snprintf(path, sizeof path, "%s/%s", dir, exe);
+#endif
     if (chdir(dir) != 0) {
         snprintf(err, (size_t)errlen, "could not enter %s", dir);
         return 0;
     }
+#if !defined(__linux__)
     /* dir may be relative. Resolve the executable from the new working directory. */
     snprintf(path, sizeof path, "./%s", exe);
+#endif
     {
         char *argv[1 + 2 + sizeof l_game_args / sizeof *l_game_args + 1];
         int offset = module ? 2 : 0;

@@ -108,10 +108,18 @@ tools/linux/build-linux.sh --no-brain # skip the .so files, which change rarely
 
 On Linux the binaries land in `build/linux/`. Run `opencnc3d` or `opencnc3d-launcher`
 from that directory. `TiberianDawn.so` and `RedAlert.so` sit beside `opencnc3d`.
-Red Alert loads `./RedAlert.so`. A hybrid laptop renders on the NVIDIA GPU;
-`OPENCNC3D_GPU=intel` keeps the integrated one. Game data is the published Windows
-module, installed by the launcher into the same directory. The launcher does not
-download a program update: the site has no Linux build of `opencnc3d`.
+Red Alert loads `RedAlert.so` from the working directory or from beside the binary.
+A hybrid laptop renders on the NVIDIA GPU; `OPENCNC3D_GPU=intel` keeps the integrated
+one. Game data is the published Windows module. In this folder the launcher installs
+it beside the binaries. The launcher does not download a program update: the site
+has no Linux build of `opencnc3d`.
+
+A Debian package of the same build is `dpkg-buildpackage -us -uc` from this tree,
+then `apt install ../opencnc3d_*.deb`. The package file is written next to this
+tree, not inside it. The programs land in `/usr/lib/opencnc3d`, with
+links in `/usr/bin`, and a menu entry starts `opencnc3d-launcher`. The package does
+not contain the game data. The launcher stores that in
+`~/.local/share/Slipgate Ironworks/OpenCNC3D/`.
 
 `game/make-build.sh` takes the destination as its first argument and reads the baked data
 from `OPENCNC3D_DATA`. The Windows zip expands to `OpenCNC3D-windows-<commit>/`, whose one
