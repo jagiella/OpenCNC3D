@@ -42,6 +42,20 @@ which is also how CI builds it.
 tools/win/setup-toolchain.sh          # once: fetches the two SDKs mingw-w64 lacks, into ~/.opencnc3d-winsdk
 ```
 
+**Linux**: gcc, cmake, Python 3, and the SDL2, OpenGL, zlib and curl development
+packages. The script checks for them and names the Debian/Ubuntu packages when one
+is missing.
+
+```
+sudo apt install build-essential cmake python3 \
+    libsdl2-dev libgl1-mesa-dev zlib1g-dev libcurl4-openssl-dev
+```
+
+The Linux brain is 64-bit. The one place that stores a building type in a pointer
+slot reads it back through `uintptr_t`, so the value is not cut down to 32 bits.
+The site publishes no Linux program zip. The launcher installs the Windows module
+packages for the game data and does not replace `opencnc3d` from the site.
+
 **Both** need Python 3 with `pillow` and `numpy` for the extraction and baking tools.
 
 ## 3. The brain
@@ -52,6 +66,7 @@ portability patches. It builds as a shared library the renderer loads at runtime
 ```
 tools/mac/build-brain-mac.sh          # -> TiberianDawn.dylib
 tools/win/build-win.sh                # builds TiberianDawn.dll as part of the Windows build
+tools/linux/build-linux.sh            # -> TiberianDawn.so and RedAlert.so, beside the binaries
 ```
 
 `tools/check-brain-checkout.sh` verifies the checkout and the patches match byte for byte
@@ -87,7 +102,16 @@ OPENCNC3D_ROM       the cartridge, when it is not at data/rom/cnc_eu.z64
 game/make-build.sh                    # macOS: renderer + app, into a playable folder
 tools/win/make-build-win.sh           # Windows: a zip of the game, without the movies and music
 tools/win/build-win.sh --no-brain     # skip the DLL, which changes rarely
+tools/linux/build-linux.sh            # Linux: game, renderer, launcher, netcheck, both brains
+tools/linux/build-linux.sh --no-brain # skip the .so files, which change rarely
 ```
+
+On Linux the binaries land in `build/linux/`. Run `opencnc3d` or `opencnc3d-launcher`
+from that directory. `TiberianDawn.so` and `RedAlert.so` sit beside `opencnc3d`.
+Red Alert loads `./RedAlert.so`. A hybrid laptop renders on the NVIDIA GPU;
+`OPENCNC3D_GPU=intel` keeps the integrated one. Game data is the published Windows
+module, installed by the launcher into the same directory. The launcher does not
+download a program update: the site has no Linux build of `opencnc3d`.
 
 `game/make-build.sh` takes the destination as its first argument and reads the baked data
 from `OPENCNC3D_DATA`. The Windows zip expands to `OpenCNC3D-windows-<commit>/`, whose one

@@ -809,6 +809,12 @@ static int l_launch(const char *dir, const char *exe, const char *module,
 #define L_GAME_EXE "opencnc3d-game.exe"
 #define L_RA_GAME_EXE "ra3d\\opencnc3d-game.exe"
 #define L_EDIT_EXE "cnc_eyes.exe"
+#elif defined(__linux__)
+/* The Windows module ships ra3d/opencnc3d-game.exe. The program that runs
+   here is the Linux binary beside the module data, for both games. */
+#define L_GAME_EXE "opencnc3d"
+#define L_RA_GAME_EXE "opencnc3d"
+#define L_EDIT_EXE "cnc_eyes"
 #else
 #define L_GAME_EXE "opencnc3d"
 #define L_RA_GAME_EXE "ra3d/opencnc3d"
@@ -2499,6 +2505,12 @@ static void l_draw(L_App *a)
         snprintf(line, sizeof line, "INSTALLED  v%s", a->version);
     lui_print(&a->surf, a->f6, line, L_PANEL_X, L_INFO_Y, DM_TEXT_MEDIUM);
 
+#if defined(__linux__)
+    /* No program zip on the site is a Linux build. Say so in the slot that
+       would otherwise offer a macOS version and a button that installs it. */
+    snprintf(line, sizeof line, "AVAILABLE  UPDATES OFF");
+    (void)ph;
+#else
     switch (ph) {
     case LU_UPTODATE:
     case LU_AVAILABLE:
@@ -2522,6 +2534,7 @@ static void l_draw(L_App *a)
         line[0] = '\0';
         break;
     }
+#endif
     if (a->private_source)
         snprintf(line, sizeof line, "LOCAL SOURCE BUILD");
     lui_print_right(&a->surf, a->f6, line, L_PANEL_X + L_PANEL_W, L_INFO_Y,

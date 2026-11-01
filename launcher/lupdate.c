@@ -1167,6 +1167,13 @@ void lu_check(LU_State *u)
 {
     if (!u)
         return;
+#if defined(__linux__)
+    /* The site publishes program zips for Windows and macOS only. Applying
+       either one would replace this Linux build. Module packages are fetched
+       on their own path and are not affected. */
+    lu_set(u, LU_UPTODATE, "This Linux build is not updated from the site.");
+    return;
+#endif
     lu_start(u, LU_CHECKING, "Checking opencnc3d.com for a newer build...");
 }
 
@@ -1174,6 +1181,10 @@ void lu_apply(LU_State *u)
 {
     if (!u)
         return;
+#if defined(__linux__)
+    lu_set(u, LU_FAILED, "This Linux build is not updated from the site.");
+    return;
+#endif
     /* LU_DOWNLOADING is the worker's instruction as well as its report; the
      * thread reads the phase it was started in to know which job it has. */
     lu_start(u, LU_DOWNLOADING, "Starting the download...");
