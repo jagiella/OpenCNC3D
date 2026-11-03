@@ -6,3 +6,4 @@ Exec=opencnc3d-launcher
 Icon=opencnc3d
 Terminal=false
 Categories=Game;
+PrefersNonDefaultGPU=true
