@@ -4,11 +4,14 @@
 #   tools/linux/build-linux.sh              -> build/linux/
 #   tools/linux/build-linux.sh --no-brain   -> skip the brains (they change rarely)
 #
-# Needs a C/C++ compiler, CMake, Python 3, and the SDL2, OpenGL, zlib and libcurl
-# development packages. On Debian/Ubuntu:
+# Needs a C/C++ compiler, CMake, git, and the SDL2, OpenGL, zlib and libcurl
+# development packages. Python 3 is for the baking tools, not this script.
+# On Debian/Ubuntu:
 #
-#   sudo apt install build-essential cmake python3 \
+#   sudo apt install build-essential cmake git python3 \
 #       libsdl2-dev libgl1-mesa-dev zlib1g-dev libcurl4-openssl-dev
+#
+# git is not part of build-essential. The brain CMake stops without it.
 #
 # The binaries land in build/linux/. They still need your own game data before a
 # mission will start; see BUILDING.md. The brain is libTiberianDawn.so (CMake drops

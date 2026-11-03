@@ -1,7 +1,9 @@
 # Building OpenCNC3D
 
-This repository is source. It contains no game data, so a fresh clone will compile but
-will not run until you supply two things you already own.
+This repository is source. It contains no game data, so a fresh clone will compile
+but will not play until game data is available. Baking the packs yourself needs the
+two things in the table. On Windows, macOS and Linux the launcher downloads the
+published module packages instead, as section 5 describes.
 
 ## 1. What you have to bring
 
@@ -47,17 +49,20 @@ packages. The script checks for them and names the Debian/Ubuntu packages when o
 is missing.
 
 ```
-sudo apt install build-essential cmake python3 \
+sudo apt install build-essential cmake git python3 \
     libsdl2-dev libgl1-mesa-dev zlib1g-dev libcurl4-openssl-dev
 ```
+
+`git` is not part of `build-essential`, and the brain CMake stops without it.
+`python3` is for the baking tools in section 4.
 
 On Arch Linux the same build needs:
 
 ```
-sudo pacman -S --needed base-devel cmake sdl2-compat mesa zlib curl
+sudo pacman -S --needed base-devel cmake git sdl2-compat mesa zlib curl
 ```
 
-`base-devel` supplies the compiler and git. `sdl2-compat` supplies `sdl2-config`. Arch packages include their headers, so there is no separate development package for Mesa, zlib or curl.
+`base-devel` supplies the compiler. `git` is separate, and the brain build needs it. `sdl2-compat` supplies `sdl2-config`. Arch packages include their headers, so there is no separate development package for Mesa, zlib or curl.
 
 The Linux brain is 64-bit. The one place that stores a building type in a pointer
 slot reads it back through `uintptr_t`, so the value is not cut down to 32 bits.
@@ -81,7 +86,7 @@ tools/linux/build-linux.sh            # -> TiberianDawn.so and RedAlert.so, besi
 before anything compiles.
 
 The host looks for the library relative to the working directory. Override it with
-`CNC_BRAIN=/path/to/TiberianDawn.dylib`.
+`CNC_BRAIN=/path/to/TiberianDawn.so`, `.dylib` or `.dll`.
 
 ## 4. Extracting and baking the data
 
@@ -129,6 +134,11 @@ links in `/usr/bin`, and a menu entry starts `opencnc3d-launcher`. The package d
 not contain the game data. The launcher stores that in
 `~/.local/share/Slipgate Ironworks/OpenCNC3D/`.
 
+An Arch package of the same build is `cd archlinux && makepkg -si`. The package
+file is written in `archlinux/`. The programs, the menu entry and the data folder
+are the same as in the Debian package. The brain build needs `git`, which is
+not part of `base-devel`.
+
 `game/make-build.sh` takes the destination as its first argument and reads the baked data
 from `OPENCNC3D_DATA`. The Windows zip expands to `OpenCNC3D-windows-<commit>/`, whose one
 file to run is `OpenCNC3D.exe`, the launcher, and needs nothing installed on the target
@@ -148,7 +158,7 @@ step produces a build that runs only on the machine that made it.
 
 ## 6. Two render tiers
 
-Tier 2 is the modern desktop build, Windows and macOS, and may use shaders. Tier 1 is
+Tier 2 is the modern desktop build, Windows, macOS and Linux, and may use shaders. Tier 1 is
 the constrained one kept reachable as a stretch goal: Windows 98 on a 3dfx Voodoo 2
 through Glide, fixed function, no shaders, no render targets, 640x480, 16-bit colour.
 
