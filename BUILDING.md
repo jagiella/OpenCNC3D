@@ -51,6 +51,14 @@ sudo apt install build-essential cmake python3 \
     libsdl2-dev libgl1-mesa-dev zlib1g-dev libcurl4-openssl-dev
 ```
 
+On Arch Linux the same build needs:
+
+```
+sudo pacman -S --needed base-devel cmake sdl2-compat mesa zlib curl
+```
+
+`base-devel` supplies the compiler and git. `sdl2-compat` supplies `sdl2-config`. Arch packages include their headers, so there is no separate development package for Mesa, zlib or curl.
+
 The Linux brain is 64-bit. The one place that stores a building type in a pointer
 slot reads it back through `uintptr_t`, so the value is not cut down to 32 bits.
 The site publishes no Linux program zip. The launcher installs the Windows module

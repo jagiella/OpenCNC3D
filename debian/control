@@ -3,7 +3,7 @@ Section: games
 Priority: optional
 Maintainer: jagiella <nick.jagiella@gmail.com>
 Rules-Requires-Root: no
-Build-Depends: debhelper-compat (= 13), cmake, g++, libsdl2-dev, libgl1-mesa-dev, zlib1g-dev, libcurl4-openssl-dev
+Build-Depends: debhelper-compat (= 13), cmake, g++, git, libsdl2-dev, libgl1-mesa-dev, zlib1g-dev, libcurl4-openssl-dev
 Standards-Version: 4.7.0
 Homepage: https://github.com/jagiella/OpenCNC3D
 
