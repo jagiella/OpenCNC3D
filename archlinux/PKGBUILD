@@ -18,7 +18,7 @@ url='https://github.com/jagiella/OpenCNC3D'
 license=('GPL-3.0-or-later')
 depends=('sdl2-compat' 'libglvnd' 'zlib' 'curl')
 makedepends=('cmake' 'git' 'sdl2-compat' 'mesa' 'zlib' 'curl')
-options=('!buildflags' '!lto')
+options=('!buildflags' '!lto' '!debug')
 
 _repo_root() {
 	(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)
