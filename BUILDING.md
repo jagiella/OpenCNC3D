@@ -122,8 +122,12 @@ tools/linux/build-linux.sh --no-brain # skip the .so files, which change rarely
 On Linux the binaries land in `build/linux/`. Run `opencnc3d` or `opencnc3d-launcher`
 from that directory. `TiberianDawn.so` and `RedAlert.so` sit beside `opencnc3d`.
 Red Alert loads `RedAlert.so` from the working directory or from beside the binary.
-A hybrid laptop sets `DRI_PRIME=1` unless that variable is already set.
-`DRI_PRIME=0` keeps the integrated GPU. A machine with one GPU is unchanged. Game data is the published Windows module. In this folder the launcher installs
+On a hybrid with exactly one boot GPU and one other, the game moves rendering
+to the discrete adapter when the boot GPU is Intel (Intel plus NVIDIA uses
+NVIDIA PRIME; Intel plus AMD uses Mesa `DRI_PRIME=pci-…`), or when both GPUs
+are AMD and the machine reports a battery. A desktop whose monitor is on the
+graphics card is unchanged. Exported `DRI_PRIME` or NVIDIA PRIME variables win;
+`DRI_PRIME=0` keeps the integrated GPU. Game data is the published Windows module. In this folder the launcher installs
 it beside the binaries. The launcher does not download a program update: the site
 has no Linux build of `opencnc3d`.
 
